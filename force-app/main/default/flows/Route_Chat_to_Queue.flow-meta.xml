@@ -32,7 +32,7 @@
         <inputParameters>
             <name>routingType</name>
             <value>
-                <stringValue>QueueBased</stringValue>
+                <stringValue>Copilot</stringValue>
             </value>
         </inputParameters>
         <inputParameters>
@@ -61,6 +61,9 @@
         </inputParameters>
         <inputParameters>
             <name>copilotLabel</name>
+            <value>
+                <stringValue>Support Agent</stringValue>
+            </value>
         </inputParameters>
         <inputParameters>
             <name>agentforceEmployeeAgentLabel</name>
@@ -73,6 +76,9 @@
             <value>
                 <stringValue>single</stringValue>
             </value>
+        </inputParameters>
+        <inputParameters>
+            <name>routingStartOption</name>
         </inputParameters>
         <inputParameters>
             <name>serviceChannelId</name>
@@ -89,6 +95,10 @@
         </inputParameters>
         <inputParameters>
             <name>copilotId</name>
+            <value>
+                <setupReference>Support_Agent</setupReference>
+                <setupReferenceType>BotDefinition</setupReferenceType>
+            </value>
         </inputParameters>
         <inputParameters>
             <name>agentforceEmployeeAgentId</name>

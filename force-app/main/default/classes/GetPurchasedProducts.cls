@@ -11,9 +11,9 @@ public with sharing class GetPurchasedProducts {
         @InvocableVariable(label='Verified' description='True only if the email and order number belong to the same order.')
         public Boolean verified;
         @InvocableVariable(label='Order Id' description='Salesforce Id of the verified order. Pass this to the case action.')
-        public Id orderId;
+        public String orderId;
         @InvocableVariable(label='Contact Id' description='Salesforce Id of the customer. Pass this to the case action.')
-        public Id contactId;
+        public String contactId;
         @InvocableVariable(label='Products' description='Numbered list of products on the order, each with its Product Id.')
         public String products;
         @InvocableVariable(label='Message' description='Short result message for the agent.')
@@ -31,18 +31,41 @@ public with sharing class GetPurchasedProducts {
             orderNumbers.add(normalise(r.orderNumber));
         }
 
-        // One query for all requests (bulk-safe). USER_MODE enforces the bot user's CRUD/FLS.
+        // Query 1: orders. Binds are passed by name (avoids the tmpVar issue in the agent runtime).
+        // USER_MODE enforces the bot user's object access, field access and sharing.
         Map<String, Order> ordersByNumber = new Map<String, Order>();
-        for (Order o : [
-            SELECT Id, OrderNumber, BillToContactId, BillToContact.Email,
-                   (SELECT Product2Id, Product2.Name, Product2.ProductCode FROM OrderItems)
-            FROM Order
-            WHERE OrderNumber IN :orderNumbers
-            WITH USER_MODE
-        ]) {
+        List<Order> foundOrders = Database.queryWithBinds(
+            'SELECT Id, OrderNumber, BillToContactId, BillToContact.Email ' +
+            'FROM Order WHERE OrderNumber IN :orderNumbers',
+            new Map<String, Object>{ 'orderNumbers' => orderNumbers },
+            AccessLevel.USER_MODE
+        );
+        for (Order o : foundOrders) {
             ordersByNumber.put(o.OrderNumber, o);
         }
 
+        // Query 2: the order lines for those orders.
+        Set<Id> orderIds = new Set<Id>();
+        for (Order o : ordersByNumber.values()) {
+            orderIds.add(o.Id);
+        }
+        Map<Id, List<OrderItem>> itemsByOrder = new Map<Id, List<OrderItem>>();
+        if (!orderIds.isEmpty()) {
+            List<OrderItem> lines = Database.queryWithBinds(
+                'SELECT OrderId, Product2Id, Product2.Name, Product2.ProductCode ' +
+                'FROM OrderItem WHERE OrderId IN :orderIds',
+                new Map<String, Object>{ 'orderIds' => orderIds },
+                AccessLevel.USER_MODE
+            );
+            for (OrderItem oi : lines) {
+                if (!itemsByOrder.containsKey(oi.OrderId)) {
+                    itemsByOrder.put(oi.OrderId, new List<OrderItem>());
+                }
+                itemsByOrder.get(oi.OrderId).add(oi);
+            }
+        }
+
+        // Build one response per request.
         List<Response> results = new List<Response>();
         for (Request r : requests) {
             Response res = new Response();
@@ -62,15 +85,20 @@ public with sharing class GetPurchasedProducts {
                 res.verified = true;
                 res.orderId = o.Id;
                 res.contactId = o.BillToContactId;
-                List<String> lines = new List<String>();
+
+                List<OrderItem> orderLines = itemsByOrder.containsKey(o.Id)
+                    ? itemsByOrder.get(o.Id)
+                    : new List<OrderItem>();
+
+                List<String> productLines = new List<String>();
                 Integer i = 1;
-                for (OrderItem item : o.OrderItems) {
-                    lines.add(i + '. ' + item.Product2.Name + ' (' + item.Product2.ProductCode
+                for (OrderItem item : orderLines) {
+                    productLines.add(i + '. ' + item.Product2.Name + ' (' + item.Product2.ProductCode
                         + ') - Product Id: ' + item.Product2Id);
                     i++;
                 }
-                res.products = String.join(lines, '\n');
-                res.message = 'Customer verified. ' + lines.size() + ' product(s) found.';
+                res.products = String.join(productLines, '\n');
+                res.message = 'Customer verified. ' + productLines.size() + ' product(s) found.';
             }
             results.add(res);
         }

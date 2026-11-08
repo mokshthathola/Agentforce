@@ -150,6 +150,7 @@
         <object>Group</object>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
+    <runInMode>SystemModeWithoutSharing</runInMode>
     <start>
         <locationX>0</locationX>
         <locationY>0</locationY>
@@ -157,7 +158,7 @@
             <targetReference>Get_queue_record</targetReference>
         </connector>
     </start>
-    <status>Active</status>
+    <status>Draft</status>
     <variables>
         <name>caseNumber</name>
         <dataType>String</dataType>
