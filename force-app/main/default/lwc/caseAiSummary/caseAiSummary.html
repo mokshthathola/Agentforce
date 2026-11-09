@@ -1,0 +1,55 @@
+<template>
+    <lightning-card title="AI Case Summary" icon-name="utility:einstein">
+        <div class="slds-p-horizontal_medium">
+            <template lwc:if={isLoading}>
+                <div class="slds-is-relative slds-p-around_large">
+                    <lightning-spinner alternative-text="Generating summary" size="small"></lightning-spinner>
+                </div>
+            </template>
+
+            <template lwc:if={hasDraft}>
+                <lightning-textarea
+                    label="Draft summary (review and edit before using)"
+                    value={draft}
+                    onchange={handleChange}
+                    max-length="32000">
+                </lightning-textarea>
+                <p class="slds-text-body_small slds-text-color_weak slds-m-top_xx-small">
+                    AI-generated content. Check it before saving.
+                </p>
+            </template>
+
+            <template lwc:if={error}>
+                <p class="slds-text-color_error slds-m-top_small">{error}</p>
+            </template>
+
+            <template lwc:if={showEmptyState}>
+                <p class="slds-text-color_weak">Generate a summary of this case from its details.</p>
+            </template>
+        </div>
+
+        <div slot="footer">
+            <lightning-button
+                label={generateLabel}
+                icon-name="utility:sparkles"
+                onclick={handleGenerate}
+                disabled={isLoading}>
+            </lightning-button>
+            <template lwc:if={hasDraft}>
+                <lightning-button
+                    label="Discard"
+                    class="slds-m-left_x-small"
+                    onclick={handleDiscard}
+                    disabled={isLoading}>
+                </lightning-button>
+                <lightning-button
+                    variant="brand"
+                    label="Use"
+                    class="slds-m-left_x-small"
+                    onclick={handleUse}
+                    disabled={isUseDisabled}>
+                </lightning-button>
+            </template>
+        </div>
+    </lightning-card>
+</template>

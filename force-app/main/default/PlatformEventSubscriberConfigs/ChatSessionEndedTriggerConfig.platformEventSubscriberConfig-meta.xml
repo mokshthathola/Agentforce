@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PlatformEventSubscriberConfig xmlns="http://soap.sforce.com/2006/04/metadata">
+    <batchSize>10</batchSize>
+    <masterLabel>ChatSessionEndedTriggerConfig</masterLabel>
+    <platformEventConsumer>ChatSessionEndedTrigger</platformEventConsumer>
+    <user>mokshthathola.48afacd84170@agentforce.com</user>
+</PlatformEventSubscriberConfig>
