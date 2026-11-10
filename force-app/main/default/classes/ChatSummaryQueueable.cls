@@ -45,7 +45,7 @@ public with sharing class ChatSummaryQueueable implements Queueable, Database.Al
         ConnectApi.EinsteinPromptTemplateGenerationsInput input =
             new ConnectApi.EinsteinPromptTemplateGenerationsInput();
         input.isPreview = false;
-        input.inputParams = new Map<String, ConnectApi.WrappedValue>{ 'Input:messagingSession' => sessionValue };
+        input.inputParams = new Map<String, ConnectApi.WrappedValue>{ 'Input:MessagingSession' => sessionValue };
         input.additionalConfig = new ConnectApi.EinsteinLlmAdditionalConfigInput();
         input.additionalConfig.applicationName = 'PromptBuilderPreview';
 

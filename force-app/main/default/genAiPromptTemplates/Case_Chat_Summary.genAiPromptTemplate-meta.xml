@@ -44,6 +44,44 @@ Next step: one suggested next action for the agent.
         <templateFormat>Jinja</templateFormat>
         <versionIdentifier>eqXAR1heFh6n3IPdB2sJCbILaFY8Ag89ohAUFsb/IS8=_1</versionIdentifier>
     </templateVersions>
+    <templateVersions>
+        <content>You are a customer support assistant. Write a summary of this support case for a service agent who is picking it up.
+⁠
+Case details:
+- Subject: {{Input.Case.Subject}}
+- Description: {{Input.Case.Description}}
+- Status: {{Input.Case.Status}}
+- Priority: {{Input.Case.Priority}}
+- Origin: {{Input.Case.Origin}}
+- Created: {{Input.Case.CreatedDate}}
+- Customer: {{Input.Case.Contact.Name}}
+- Product: {{Input.Case.Purchased_Product__r.Name}}
+- Order number: {{Input.Case.Order__r.OrderNumber}}
+- Chat summary (if any): {{Input.Case.Chat_Summary__c}}
+​Write the summary in this format:
+Issue: one sentence describing the customer&apos;s problem.
+Product: the product name and order number.
+Details: two or three sentences with the important facts.
+Next step: one suggested next action for the agent.
+​Rules:
+- Use only the information above. Do not invent facts, dates, amounts or promises.
+- If a field is empty, leave it out.
+- If the subject starts with &quot;URGENT – Food safety&quot;, start the summary with &quot;URGENT – Food safety case.&quot;
+- Keep it under 120 words. Plain text, no markdown.
+​⁠</content>
+        <fileDroppingStrategy>{&quot;dropFilesBy&quot;:&quot;LAST_MODIFIED_DATE&quot;,&quot;dropFileStartingWith&quot;:&quot;OLDEST&quot;}</fileDroppingStrategy>
+        <inputs>
+            <apiName>RelatedEntity</apiName>
+            <definition>SOBJECT://Case</definition>
+            <referenceName>Input.Case</referenceName>
+            <required>true</required>
+        </inputs>
+        <isCitationEnabled>false</isCitationEnabled>
+        <primaryModel>sfdc_ai__DefaultGPT5Mini</primaryModel>
+        <status>Draft</status>
+        <templateFormat>Jinja</templateFormat>
+        <versionIdentifier>eqXAR1heFh6n3IPdB2sJCbILaFY8Ag89ohAUFsb/IS8=_2</versionIdentifier>
+    </templateVersions>
     <type>einstein_gpt__fieldCompletion</type>
     <visibility>Global</visibility>
 </GenAiPromptTemplate>

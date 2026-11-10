@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <GenAiPromptTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
-    <activeVersionIdentifier>eqXAR1heFh6n3IPdB2sJCbILaFY8Ag89ohAUFsb/IS8=_1</activeVersionIdentifier>
+    <activeVersionIdentifier>eqXAR1heFh6n3IPdB2sJCbILaFY8Ag89ohAUFsb/IS8=_2</activeVersionIdentifier>
     <developerName>Chat_Summary</developerName>
     <masterLabel>Chat Summary</masterLabel>
     <overridable>false</overridable>
@@ -31,6 +31,38 @@ Outcome: resolved, case created (include the case number if mentioned), escalate
         <status>Published</status>
         <templateFormat>Jinja</templateFormat>
         <versionIdentifier>eqXAR1heFh6n3IPdB2sJCbILaFY8Ag89ohAUFsb/IS8=_1</versionIdentifier>
+    </templateVersions>
+    <templateVersions>
+        <content>You are a customer support assistant. Summarise this customer chat for the support team.
+​Transcript (lines are labelled Customer, Bot or Agent):
+​{{Input.MessagingSession.Chat_Transcript__c}}
+⁠
+​Write the summary in this format:
+Customer issue: one sentence.
+Product and order: if mentioned, otherwise leave this line out.
+What happened: two or three sentences covering what the bot and/or human agent did.
+Outcome: resolved, case created (include the case number if mentioned), escalated, or customer left.
+​Rules:
+- Use only the transcript. Do not invent details.
+- Do not include email addresses or phone numbers.
+- Under 120 words, plain text.
+​- If the transcript is empty or missing, reply exactly: &quot;No transcript available.&quot; and nothing else.
+​- Never use placeholder values such as &lt;ORDER_12345&gt;. Only mention order numbers, products or case numbers that appear word for word in the transcript.
+​- If something did not happen in the transcript, do not mention it.
+​⁠</content>
+        <fileDroppingStrategy>{&quot;dropFilesBy&quot;:&quot;LAST_MODIFIED_DATE&quot;,&quot;dropFileStartingWith&quot;:&quot;OLDEST&quot;}</fileDroppingStrategy>
+        <inputs>
+            <apiName>MessagingSession</apiName>
+            <definition>SOBJECT://MessagingSession</definition>
+            <masterLabel>MessagingSession</masterLabel>
+            <referenceName>Input.MessagingSession</referenceName>
+            <required>true</required>
+        </inputs>
+        <isCitationEnabled>false</isCitationEnabled>
+        <primaryModel>sfdc_ai__DefaultGPT5Mini</primaryModel>
+        <status>Published</status>
+        <templateFormat>Jinja</templateFormat>
+        <versionIdentifier>eqXAR1heFh6n3IPdB2sJCbILaFY8Ag89ohAUFsb/IS8=_2</versionIdentifier>
     </templateVersions>
     <type>einstein_gpt__flex</type>
     <visibility>Global</visibility>

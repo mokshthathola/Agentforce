@@ -39,7 +39,7 @@ public with sharing class ChatTranscriptService {
             String role = sender == null ? null : (String) sender.get('role');
             Object ts = e.get('clientTimestamp');
             Long timestamp = ts == null ? 0 : Long.valueOf(String.valueOf(ts));
-            lines.add(new Line(timestamp, label(role), text.trim()));
+            lines.add(new Line(timestamp, label(role), text.unescapeHtml4().trim()));
         }
         if (lines.isEmpty()) {
             return null;
