@@ -1,0 +1,14 @@
+{
+  "required" : [ "queueDeveloperName" ],
+  "unevaluatedProperties" : false,
+  "properties" : {
+    "queueDeveloperName" : {
+      "title" : "Queue Developer Name",
+      "description" : "API name of the human support queue, for example Customer_Support_Queue.",
+      "lightning:type" : "lightning__textType",
+      "lightning:isPII" : false,
+      "copilotAction:isUserInput" : false
+    }
+  },
+  "lightning:type" : "lightning__objectType"
+}

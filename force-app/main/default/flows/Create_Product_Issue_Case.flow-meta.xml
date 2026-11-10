@@ -2,8 +2,61 @@
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>68.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <name>assigning_case_number</name>
+        <label>assigning case number</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>caseNumber</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Get_existing_case.CaseNumber</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>isExistingCase</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Updating_case_Id</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <name>Open_case_found</name>
+        <label>Open case found</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Create_Case_Records</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Found</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_existing_case</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>assigning_case_number</targetReference>
+            </connector>
+            <label>Found</label>
+        </rules>
+    </decisions>
     <ends>
-        <name>END_ELEMENT_1</name>
+        <name>END_ELEMENT_3</name>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+    </ends>
+    <ends>
+        <name>END_ELEMENT_4</name>
         <locationX>0</locationX>
         <locationY>0</locationY>
     </ends>
@@ -35,7 +88,7 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>Get_created_case_details</targetReference>
+            <targetReference>Update_Messaging_Session</targetReference>
         </connector>
         <inputAssignments>
             <field>ContactId</field>
@@ -101,7 +154,7 @@
         <locationY>0</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>END_ELEMENT_1</targetReference>
+            <targetReference>END_ELEMENT_4</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
@@ -118,8 +171,54 @@
                 <elementReference>Create_Case_Records.CaseNumber</elementReference>
             </value>
         </filters>
+        <object>Case</object>
+        <outputAssignments>
+            <assignToReference>caseNumber</assignToReference>
+            <field>CaseNumber</field>
+        </outputAssignments>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_existing_case</name>
+        <label>Get existing case</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Open_case_found</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>ContactId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>contactId</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Order__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>orderId</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Purchased_Product__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>productId</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>IsClosed</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
         <getFirstRecordOnly>true</getFirstRecordOnly>
         <object>Case</object>
+        <sortField>ClosedDate</sortField>
+        <sortOrder>Desc</sortOrder>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordLookups>
@@ -129,7 +228,7 @@
         <locationY>0</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Create_Case_Records</targetReference>
+            <targetReference>Get_existing_case</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
@@ -150,6 +249,54 @@
         <object>Group</object>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
+    <recordUpdates>
+        <name>Update_Messaging_Session</name>
+        <label>Update Messaging Session</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_created_case_details</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>messagingSessionId</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>CaseId</field>
+            <value>
+                <elementReference>Create_Case_Records.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <object>MessagingSession</object>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Updating_case_Id</name>
+        <label>Updating case Id</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>END_ELEMENT_3</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>messagingSessionId</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>CaseId</field>
+            <value>
+                <elementReference>Get_existing_case.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <object>MessagingSession</object>
+    </recordUpdates>
     <runInMode>SystemModeWithoutSharing</runInMode>
     <start>
         <locationX>0</locationX>
@@ -158,7 +305,7 @@
             <targetReference>Get_queue_record</targetReference>
         </connector>
     </start>
-    <status>Draft</status>
+    <status>Active</status>
     <variables>
         <name>caseNumber</name>
         <dataType>String</dataType>
@@ -174,7 +321,24 @@
         <isOutput>false</isOutput>
     </variables>
     <variables>
+        <name>isExistingCase</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>true</isOutput>
+        <value>
+            <booleanValue>false</booleanValue>
+        </value>
+    </variables>
+    <variables>
         <name>issueDescription</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>messagingSessionId</name>
         <dataType>String</dataType>
         <isCollection>false</isCollection>
         <isInput>true</isInput>
